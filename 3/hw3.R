@@ -35,11 +35,14 @@
 #install.packages('kernlab')
 
 library(kernlab)
+library(ROCR)
+
 
 set.seed(1991)
 
 # Import the data, split into two matrices
 #setwd('/home/hannes/Documents/UPC/KBML/3/') # Change to wd where you keep the data
+cat("Importing the data...\n")
 complete_dataset <- read.csv("wdbc.data",stringsAsFactors=FALSE) #Try the saf=FALSE to swap M/B to 1/0
 N <- nrow(complete_dataset)
 diagnosis <- complete_dataset[,c(1,2)]
@@ -56,7 +59,7 @@ diagnosis[,2] <- strtoi(diagnosis[,2], base = 10)
 # one uses. If Euclidean distance is used, it is of utmost importance, since if one variable ranges between
 # 1-2 and another between 10-20, then the latter variable has a 10 to 20 times larger effect on the outcome
 # of the distance calculation compared to the first variable
-
+cat("Normalizing data...\n")
 normalized_data <- scale(normalizable_data, center=FALSE, scale=colSums(normalizable_data))
 dataset <- cbind(diagnosis, normalized_data)
 
@@ -75,7 +78,7 @@ valid.error <- rep(0,k)
 
 C <- 1
 i=1
-
+cat("Initiating",k,"-fold cross validation with C =",C, "\n")
 for (i in 1:k) 
 {  
   train <- dataset[folds!=i,] # for building the model (training)
@@ -101,14 +104,24 @@ for (i in 1:k)
   
   t_pred <- predict(model, x_test)
   
-  table(t_test, t_pred)
+  cat("Table for number of correct/incorrect predictions in fold number:",i)
+  print(table(t_test, t_pred))
   
   x_valid <- valid[,3:32]
   pred <- predict(model,x_valid)
   t_true <- valid[,2]
-  
+  #plot(roc(t_true,pred))
   # compute validation error for part 'i'
   valid.error[i] <- sum(pred != t_true)/length(t_true)
 }
 dim(valid.error)
 cat("Average validation error:" , sum(valid.error)/length(valid.error))
+
+# Plot a ROC cure to visualize the 
+t_prediction_score = predict(model,x_test,type="decision")
+pred <- prediction(t_predscore, t_test)
+perf <- performance(pred, measure = "tpr", x.measure = "fpr")
+(auc <- performance(pred, measure = "auc")@y.values[[1]])
+
+plot(perf, col="red", main=paste("ROC Curve with AUC =",auc))
+abline(a=0, b= 1, lty=5)
