@@ -39,7 +39,7 @@ library(kernlab)
 set.seed(1991)
 
 # Import the data, split into two matrices
-setwd('/home/hannes/Documents/UPC/KBML/3/') # Change to wd where you keep the data
+#setwd('/home/hannes/Documents/UPC/KBML/3/') # Change to wd where you keep the data
 complete_dataset <- read.csv("wdbc.data",stringsAsFactors=FALSE) #Try the saf=FALSE to swap M/B to 1/0
 N <- nrow(complete_dataset)
 diagnosis <- complete_dataset[,c(1,2)]
@@ -75,42 +75,40 @@ valid.error <- rep(0,k)
 
 C <- 1
 i=1
-train <- dataset[folds!=i,] # for building the model (training)
-valid <- dataset[folds==i,] # for prediction (validation)
 
-x_train <- train[,1:2]
-t_train <- train[,3]
-
-model <- ksvm(as.matrix(x_train), t_train, type="C-svc", C=1, kernel='rbfdot',scaled=c())
-
-
-
-
-
-training.ratio <- 0.8
-ntrain <- round(N*training.ratio)
-training_part <- sample(N, ntrain)
-
-(train <- dataset[training_part,])
-(test <- dataset[-training_part,])
-
-x_train <- train[,c(3:32)]
-t_train <- train[,2]
-x_test <- test[,3:32]
-t_test <- test[,2]
-
-model <- ksvm(as.matrix(x_train), t_train, type="C-svc", C=1, kernel='rbfdot',scaled=c())
-
-model
-alpha(model)
-
-t_pred <- predict(model, x_test)
-
-table(t_test, t_pred)
-
-
-# Don't know, probably not right
-(VA.error.RBF <- train.svm.kCV ("RBF", C))
-
-model <- svm(dataset[,1:2],dataset[,3], type="C-classification", cost=C, kernel="radial", scale = FALSE)
-plot.prediction ("RBF")
+for (i in 1:k) 
+{  
+  train <- dataset[folds!=i,] # for building the model (training)
+  valid <- dataset[folds==i,] # for prediction (validation)
+  
+  
+  training.ratio <- 0.8
+  ntrain <- round(N*training.ratio)
+  training_part <- sample(N, ntrain)
+  
+  (train <- dataset[training_part,])
+  (test <- dataset[-training_part,])
+  
+  x_train <- train[,c(3:32)]
+  t_train <- train[,2]
+  x_test <- test[,3:32]
+  t_test <- test[,2]
+  
+  model <- ksvm(as.matrix(x_train), t_train, type="C-svc", C=1, kernel='rbfdot',scaled=c())
+  
+  model
+  alpha(model)
+  
+  t_pred <- predict(model, x_test)
+  
+  table(t_test, t_pred)
+  
+  x_valid <- valid[,3:32]
+  pred <- predict(model,x_valid)
+  t_true <- valid[,2]
+  
+  # compute validation error for part 'i'
+  valid.error[i] <- sum(pred != t_true)/length(t_true)
+}
+dim(valid.error)
+cat("Average validation error:" , sum(valid.error)/length(valid.error))
