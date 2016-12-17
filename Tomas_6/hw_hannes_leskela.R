@@ -26,3 +26,4 @@ X <- X[-c(1,2),]
 remove.from.indep <- seq(4,70,2)
 Xt <- Xt[-remove.from.indep,]
 Xt <- Xt[-c(1,2),]
+
