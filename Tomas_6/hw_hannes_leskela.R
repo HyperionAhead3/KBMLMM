@@ -1,4 +1,5 @@
 library(pls)
+library(FactoMineR) # Used for step 4, projection
 
 set.seed(1991)
 
@@ -58,6 +59,8 @@ plot(RMSEP(p1), legendpos = "topright")
 R2(p1)
 plot(R2(p1), legendpos = "bottomright")
 
+# Selecting 4 components for 98.49 of variance explained, based on summary above
+nd <- 4
 
 
 # the PLS1 model for step 6, not yet ready. nd is the number of components, suggesting at least 4
