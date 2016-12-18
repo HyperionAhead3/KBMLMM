@@ -39,10 +39,22 @@ X_means = colMeans(X)
 X = scale(X, scale = FALSE)
 Xt = scale(Xt, center=X_means, scale = FALSE)
 
+# A final conversion to run the pls
 X <- data.frame(X)
 Xt <- data.frame(Xt)
 
+# Run PLS1 regression on our data
 p1 <- plsr(train.response ~ ., ncomp = 10, data = X[1:38,], validation = "LOO")
 
+# Details about our model. Especially interesting is summary(p1) that gives us
+# information about the number of components that describe the training data
 attributes(p1)
 summary(p1)
+
+# Plot the components importance
+plot(RMSEP(p1), legendpos = "topright")
+
+R2(p1)
+plot(R2(p1), legendpos = "bottomright")
+
+
