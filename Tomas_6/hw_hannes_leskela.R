@@ -43,8 +43,9 @@ Xt = scale(Xt, center=X_means, scale = FALSE)
 X <- data.frame(X)
 Xt <- data.frame(Xt)
 
-# Run PLS1 regression on our data
-p1 <- plsr(train.response ~ ., ncomp = 10, data = X[1:38,], validation = "LOO")
+# Run PLS1 regression on our data, looking at up to 10 components if using ncomp =10. 
+# Can be changed to nothing to run as many as possible (36)
+p1 <- plsr(train.response ~ ., data = X[1:38,], validation = "LOO")
 
 # Details about our model. Especially interesting is summary(p1) that gives us
 # information about the number of components that describe the training data
@@ -58,3 +59,8 @@ R2(p1)
 plot(R2(p1), legendpos = "bottomright")
 
 
+
+# the PLS1 model for step 6, not yet ready. nd is the number of components, suggesting at least 4
+# perhaps as many as 7 or 8
+lmY <- lm(y~p1$scores[,1:nd])
+summary(lmY)
