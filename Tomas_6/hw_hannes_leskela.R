@@ -62,8 +62,25 @@ plot(R2(p1), legendpos = "bottomright")
 # Selecting 4 components for 98.49 of variance explained, based on summary above
 nd <- 4
 
+# Incorrect plots?
+# plot(p1, ncomp = 4, asp = 1)
+# abline(a =0.5, b = 0, lty = 2)
+
+# Projecting the test data onto selected components. Test data is centered around 
+# training mean earlier in the code.
+
+
+
 
 # the PLS1 model for step 6, not yet ready. nd is the number of components, suggesting at least 4
 # perhaps as many as 7 or 8
 lmY <- lm(y~p1$scores[,1:nd])
 summary(lmY)
+
+# or step 6 using predict()
+indep.predictions <- round(predict(p1, ncomp = 10, newdata = Xt))
+difference.vector <- indep.response == indep.predictions
+length(difference.vector[difference.vector == TRUE])
+# 33 correct out of 34! Good predictor using 4 components
+# On the other hand, 31 correct using one component, i.e 91% correct, when only 78% of
+# training variance is explained. Fishy...
