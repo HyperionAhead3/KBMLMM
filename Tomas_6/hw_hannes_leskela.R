@@ -1,5 +1,6 @@
 library(pls)
 library(FactoMineR) # Used for step 4, projection
+library(calibrate) # Used for step 5, method circle()
 
 set.seed(1991)
 
@@ -70,10 +71,21 @@ nd <- 4
 # training mean earlier in the code.
 
 
+# Point 5, plots. These don't make any sense, and should probably be points instead of 
+# all the params...
+corXp1 <- cor(X,p1$scores)
+coryp1 <- cor(train.response,p1$scores)
+rownames(coryp1) = "Octane"
+corXyp1 <- rbind(corXp1,coryp1)
+plot(corXyp1,ylim=c(-1,1),xlim=c(-1,1),asp=1,type="n",main="Correlations of variables with components")
+#text(corXyp1,labels=rownames(corXyp1),col=c(rep(1,p),rep(2,1)),adj=1.1,cex=0.85)
+p <- ncol(X)
+arrows(rep(0,(p+1)),rep(0,(p+1)),corXyp1[,1],corXyp1[,2],col=c(rep(1,p),rep(2,1)),length=0.07)
+abline(h=0,v=0, col="gray")
+circle()
 
 
-# the PLS1 model for step 6, not yet ready. nd is the number of components, suggesting at least 4
-# perhaps as many as 7 or 8
+# the PLS1 model for step 6, not yet ready.
 lmY <- lm(y~p1$scores[,1:nd])
 summary(lmY)
 
