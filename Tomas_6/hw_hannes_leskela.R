@@ -1,6 +1,7 @@
 library(pls)
 library(FactoMineR) # Used for step 4, projection
 library(calibrate) # Used for step 5, method circle()
+library(SDMTools) # Used for confusion matrix
 
 set.seed(1991)
 
@@ -69,7 +70,7 @@ nd <- 4
 
 # Projecting the test data onto selected components. Test data is centered around 
 # training mean earlier in the code.
-
+test_projection <- as.matrix(Xt) %*% p1$projection[,1:4]
 
 # Point 5, plots. These don't make any sense, and should probably be points instead of 
 # all the params...
@@ -96,3 +97,5 @@ length(difference.vector[difference.vector == TRUE])
 # 33 correct out of 34! Good predictor using 4 components
 # On the other hand, 31 correct using one component, i.e 91% correct, when only 78% of
 # training variance is explained. Fishy...
+
+confusion.matrix()
