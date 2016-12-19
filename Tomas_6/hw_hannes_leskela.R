@@ -64,10 +64,6 @@ plot(R2(p1), legendpos = "bottomright")
 # Selecting 4 components for 98.49 of variance explained, based on summary above
 nd <- 4
 
-# Incorrect plots?
-# plot(p1, ncomp = 4, asp = 1)
-# abline(a =0.5, b = 0, lty = 2)
-
 # Projecting the test data onto selected components. Test data is centered around 
 # training mean earlier in the code.
 test_projection <- as.matrix(Xt) %*% p1$projection[,1:4]
