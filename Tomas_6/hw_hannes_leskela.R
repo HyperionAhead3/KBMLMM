@@ -66,32 +66,30 @@ nd <- 4
 
 # Projecting the test data onto selected components. Test data is centered around 
 # training mean earlier in the code.
-test_projection <- as.matrix(Xt) %*% p1$projection[,1:4]
+test.projection <- as.matrix(Xt) %*% p1$projection[,1:4]
 
-# Point 5, plots. These don't make any sense, and should probably be points instead of 
-# all the params...
-corXp1 <- cor(X,p1$scores)
-coryp1 <- cor(train.response,p1$scores)
-rownames(coryp1) = "Octane"
-corXyp1 <- rbind(corXp1,coryp1)
-plot(corXyp1,ylim=c(-1,1),xlim=c(-1,1),asp=1,type="n",main="Correlations of variables with components")
-#text(corXyp1,labels=rownames(corXyp1),col=c(rep(1,p),rep(2,1)),adj=1.1,cex=0.85)
-p <- ncol(X)
-arrows(rep(0,(p+1)),rep(0,(p+1)),corXyp1[,1],corXyp1[,2],col=c(rep(1,p),rep(2,1)),length=0.07)
-abline(h=0,v=0, col="gray")
-circle()
+# Plot the data 
+plot(p1$scores[, 1:2], col = as.factor(train.response))
+points(test.projection[,1:2], pch=17, col=as.factor(indep.response))
+legend("topright",c("ALL","AML","ALL(test)","AML(test)"), pch=c(1,1,17,17),col=c("black","red","black","red"))
 
 
 # the PLS1 model for step 6, not yet ready.
-lmY <- lm(y~p1$scores[,1:nd])
-summary(lmY)
+
+train.pls.data <- data.frame(p1$scores[,1:4])
+
+glmY <- model <- glm(as.factor(indep.response) ~ .,family=binomial(link='logit'),data=train.pls.data)
+summary(glmY)
+
+# predict(lmY,newdata = Xt)
 
 # or step 6 using predict()
-indep.predictions <- round(predict(p1, ncomp = 10, newdata = Xt))
+indep.predictions <- round(predict(glmY, ncomp = 10, newdata = Xt))
 difference.vector <- indep.response == indep.predictions
 length(difference.vector[difference.vector == TRUE])
 # 33 correct out of 34! Good predictor using 4 components
 # On the other hand, 31 correct using one component, i.e 91% correct, when only 78% of
 # training variance is explained. Fishy...
 
-confusion.matrix()
+# The corresponding confusion matrix to our model
+confusion.matrix(indep.response, indep.predictions)
